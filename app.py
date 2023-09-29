@@ -1,6 +1,5 @@
 import streamlit as st
 import pytube as py
-import base64
 import os
 
 # Set page configuration
@@ -11,32 +10,43 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-[theme]
-primaryColor = "#f7f6f2"
-backgroundColor = "#0f1201"
-secondaryBackgroundColor = "#1d4c52"
-textColor = "#2b87a4"
-font = "sans-serif"
-
 # Custom CSS
-custom_css = f"""
+custom_css = """
 <style>
-body {{
-background-color: {backgroundColor};
-color: {textColor};
-font-family: {font};
-}}
-.StreamlitApp .stButton > button {{
-color: {textColor};
-background-color: {secondaryBackgroundColor};
-}}
+[data-testid="stAppViewContainer"]{
+background-color: #f7f6f2;
+color: #2b87a4;
+font-family: "sans-serif";}
+[data-testid="stButton"],[data-testid="stDownloadButton"] :active, :visited{
+
+color: #2b87a4;
+border-color: #2b87a4;
+}
+
+[data-testid="stButton"] :hover{
+background-color: #1d4c52;
+color: white;
+border-color:white;
+}
+[data-testID="stHeader"]{
+background-color:rgba(0,0,0,0);
+}
+[data-testid="stDownloadButton"] :hover{
+background-color: #1d4c52;
+color: white;
+border-color:white;
+}
 </style>
 """
 
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # Get the YouTube link from the user
-youtube_link = st.text_input("Youtube Video Link: ", key="youtubelink")
+st.title("Enter The Youtube Video link: ")
+youtube_link = st.text_input("", key="youtubelink")
+
+# Get the video resolution from the user
+video_resolution = st.selectbox("Select Video Resolution", ["360p", "720p","1080"], key="resolution")
 
 # Button to process the YouTube link
 if st.button("Process Video"):
@@ -44,25 +54,31 @@ if st.button("Process Video"):
         # Create a YouTube object
         video_instance = py.YouTube(youtube_link)
 
-        # Get the highest resolution stream
-        stream = video_instance.streams.get_highest_resolution()
+        # Get the stream with the selected resolution
+        stream = video_instance.streams.filter(res=video_resolution).first()
 
-        # Display the video
-        st.video(youtube_link)
+        if stream is None:
+            st.write(f"No video found with resolution {video_resolution}")
+        else:
+            # Download the video (this will download the video to the server running Streamlit)
+            filename = stream.download()
 
-        # Download the video (this will download the video to the server running Streamlit)
-        filename = stream.download()
+            # Check if the file exists (download was successful)
+            if os.path.isfile(filename):
+                # Get the actual name of the file without OS path
+                actual_filename = os.path.basename(filename)
 
-        # Check if the file exists (download was successful)
-        if os.path.isfile(filename):
-            # Get the actual name of the file without OS path
-            actual_filename = os.path.basename(filename)
+                # Read file data
+                with open(filename, "rb") as f:
+                    bytes = f.read()
 
-            # Read file data
-            with open(filename, "rb") as f:
-                bytes = f.read()
-                b64 = base64.b64encode(bytes).decode()
+                # Provide a button for the user to download the video file
+                st.download_button(
+                    label="Download Video",
+                    data=bytes,
+                    file_name=actual_filename,
+                    mime='video/mp4'
+        
+                )
 
-            # Provide a link for the user to download the video file
-            href = f'<a href="data:file/mp4;base64,{b64}" download="{actual_filename}">Click here to download</a>'
-            st.markdown(href, unsafe_allow_html=True)
+            st.video(youtube_link)
