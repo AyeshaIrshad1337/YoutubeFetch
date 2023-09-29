@@ -16,7 +16,9 @@ custom_css = """
 [data-testid="stAppViewContainer"]{
 background-color: #f7f6f2;
 color: #2b87a4;
-font-family: "sans-serif";}
+font-family: "sans-serif";
+font-size:65px;
+}
 [data-testid="stButton"],[data-testid="stDownloadButton"] :active, :visited{
 
 color: #2b87a4;
@@ -36,17 +38,30 @@ background-color: #1d4c52;
 color: white;
 border-color:white;
 }
+[data-testid="stTextInput"] p{
+color: #2b87a4;
+font-family: "sans-serif";
+font-size: 25px;
+font-weight:bold;
+}
+[data-testid="stWidgetLabel"] p{
+color: #2b87a4;
+font-family: "sans-serif";
+font-size: 25px;
+font-weight:bold;
+}
 </style>
 """
 
 st.markdown(custom_css, unsafe_allow_html=True)
-
+st.image("logo.png")
 # Get the YouTube link from the user
-st.title("Enter The Youtube Video link: ")
-youtube_link = st.text_input("", key="youtubelink")
+# st.text("Enter The Youtube Video link: ")
+youtube_link = st.text_input("Enter The Youtube Video link:", key="youtubelink")
 
 # Get the video resolution from the user
-video_resolution = st.selectbox("Select Video Resolution", ["360p", "720p","1080"], key="resolution")
+# st.text("Select Video Resolution: ")
+video_resolution = st.selectbox("Select Video Resolution:", ["360p", "720p","1080"], key="resolution")
 
 # Button to process the YouTube link
 if st.button("Process Video"):
