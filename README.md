@@ -21,9 +21,14 @@ This application allows you to download YouTube videos in various resolutions. I
 4. If the video is available in the selected resolution, it will be downloaded and a 'Download Video' button will appear.
 5. Click on 'Download Video' to download the video to your local system.
 
+## Installation and Running
+1. Clone this repository to your local machine using `git clone <repo_link>`.
+2. Navigate to the cloned repository using `cd <repo_name>`.
+3. Install the required dependencies using `pip install -r requirements.txt`.
+4. Run the Streamlit app using `streamlit run app.py`.
+
 ## Note
 The application downloads the video to the server running Streamlit first before making it available for download to your local system.
 
 ## License
 This project is licensed under the terms of the MIT license.
-
